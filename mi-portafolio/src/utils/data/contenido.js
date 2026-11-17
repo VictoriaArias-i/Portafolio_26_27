@@ -5,8 +5,8 @@ export const BOTONES_UI = {
     id: 'btn-reverse',
     nombre: 'Reverse',
     archivo: '/dibujos/Reverse.PNG',
-    x: '9%',
-    y: '9%',
+    x: '7%',
+    y: '5.5%',
     ancho: '3.0%'
   },
   musica: {
@@ -14,8 +14,8 @@ export const BOTONES_UI = {
     nombre: 'Musica',
     archivoOff: '/dibujos/Mu_off.PNG',
     archivoOn: '/dibujos/Mu_On.PNG',
-    x: '91%',
-    y: '59%',
+    x: '9%',
+    y: '10%',
     ancho: '3.1%'
   }
 };
