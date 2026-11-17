@@ -3,10 +3,33 @@ export const DIBUJOS_SOBRE_MI = [
     id: 'cont_sobre_mi',
     nombre: 'Contenido Sobre Mí',
     archivo: '/dibujos/Cont.PNG',
-    x: '10%',
-    y: '30%',
+    x: '2%',
+    y: '33%',
     alto: '20%',
     expandible: true,
     escalaExpandida: 1.5
-  }
+  },
+  { id: 's_1', nombre: 'S_1', archivo: '/dibujos/S_1.PNG', x: '1.0%', y: '15.0%' },
+  { id: 's_2', nombre: 'S_2', archivo: '/dibujos/S_2.PNG', x: '4.5%', y: '8.0%' },
+  { id: 's_3', nombre: 'S_3', archivo: '/dibujos/S_3.PNG', x: '8.0%', y: '16.0%' },
+  { id: 's_4', nombre: 'S_4', archivo: '/dibujos/S_4.PNG', x: '1.0%', y: '7.0%' },
+  { id: 's_5', nombre: 'S_5', archivo: '/dibujos/S_5.PNG', x: '6.0%', y: '20.0%' },
+  { id: 'p_2', nombre: 'P_2', archivo: '/dibujos/P_2.PNG', x: '24.7%', y: '7.0%' },
+  {
+    id: 'trabajos',
+    nombre: 'Trabajos',
+    archivo: '/dibujos/Trabajos.PNG',
+    x: '72.0%',
+    y: '55.0%',
+    alto: '25%'
+  },
+  {
+    id: 'contacto',
+    nombre: 'Contacto',
+    archivo: '/dibujos/Contacto.PNG',
+    x: '66.0%',
+    y: '39.0%',
+    alto: '25%'
+  },
+  { id: 'p_1', nombre: 'P_1', archivo: '/dibujos/P_1.PNG', x: '80.5%', y: '33.1%' }
 ];
