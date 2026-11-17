@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue } from 'framer-motion';
-import { DIBUJOS, PESTANAS_PATRON, BOTONES_UI } from './utils/data/contenido';
+import * as contenido from './utils/data/contenido';
 import { MUSICA_FONDO, sonarPop, sonarOrdenar } from './utils/data/sonidos';
 import './App.css';
+
+const { DIBUJOS, PESTANAS_PATRON, BOTONES_UI } = contenido;
+const DIBUJOS_SOBRE_MI = contenido.DIBUJOS_SOBRE_MI || [];
 
 function CapaFullCanvas({ dibujo, zIndex, activa, enArrastre, onFrente, onDragState, onRegistrarMapa }) {
   const x = useMotionValue(0);
@@ -171,7 +174,10 @@ function BotonMovible({ boton, src, lienzoRef, onHoverChange, onAccion, title, h
 export default function App() {
   const ordenInicialPestanas = [...PESTANAS_PATRON].reverse().map((p) => p.id);
 
+  const [vistaActiva, setVistaActiva] = useState('inicio');
+  const [bgSobreMi, setBgSobreMi] = useState('/dibujos/BG_S.png');
   const [ordenDibujos, setOrdenDibujos] = useState(DIBUJOS.map((d) => d.id));
+  const [ordenDibujosSobreMi, setOrdenDibujosSobreMi] = useState(DIBUJOS_SOBRE_MI.map((d) => d.id));
   const [ordenPestanas, setOrdenPestanas] = useState(ordenInicialPestanas);
   const [capaHover, setCapaHover] = useState(null);
   const [capaArrastrando, setCapaArrastrando] = useState(null);
@@ -184,6 +190,13 @@ export default function App() {
   const lienzoRef = useRef(null);
   const mapasPixelesRef = useRef({});
   const audioRef = useRef(null);
+
+  // Respaldo automático si BG_S está guardado con extensión .PNG en mayúscula
+  useEffect(() => {
+    const img = new Image();
+    img.src = '/dibujos/BG_S.png';
+    img.onerror = () => setBgSobreMi('/dibujos/BG_S.PNG');
+  }, []);
 
   useEffect(() => {
     const audio = new Audio(MUSICA_FONDO.ruta);
@@ -223,10 +236,11 @@ export default function App() {
       });
 
     const procesarImagenes = async () => {
+      const todosLosDibujos = [...DIBUJOS, ...DIBUJOS_SOBRE_MI];
       const rutasIndividuales = [
         ...new Set([
           ...PESTANAS_PATRON.map((p) => p.archivo),
-          ...DIBUJOS.filter((d) => !d.capaCompleta).map((d) => d.archivo),
+          ...todosLosDibujos.filter((d) => !d.capaCompleta).map((d) => d.archivo),
           BOTONES_UI.reverse.archivo
         ])
       ];
@@ -326,7 +340,11 @@ export default function App() {
   }, []);
 
   const traerDibujoAlFrente = (id) => {
-    setOrdenDibujos((prev) => [...prev.filter((item) => item !== id), id]);
+    if (vistaActiva === 'sobre-mi') {
+      setOrdenDibujosSobreMi((prev) => [...prev.filter((item) => item !== id), id]);
+    } else {
+      setOrdenDibujos((prev) => [...prev.filter((item) => item !== id), id]);
+    }
   };
 
   const traerPestanaAlFrente = (id) => {
@@ -338,7 +356,7 @@ export default function App() {
   };
 
   const manejarMovimientoCursor = (e) => {
-    if (capaArrastrando || itemNormalHover || !lienzoRef.current) {
+    if (vistaActiva !== 'inicio' || capaArrastrando || itemNormalHover || !lienzoRef.current) {
       if (capaHover) setCapaHover(null);
       return;
     }
@@ -374,7 +392,19 @@ export default function App() {
     sonarOrdenar();
     setOrdenPestanas([...PESTANAS_PATRON].reverse().map((p) => p.id));
     setOrdenDibujos(DIBUJOS.map((d) => d.id));
+    setOrdenDibujosSobreMi(DIBUJOS_SOBRE_MI.map((d) => d.id));
     setResetKey((k) => k + 1);
+  };
+
+  const manejarClickPestana = (tab, index) => {
+    sonarPop();
+    traerPestanaAlFrente(tab.id);
+    setCapaHover(null);
+
+    const destino = tab.vista || (index === 0 ? 'inicio' : index === 1 ? 'sobre-mi' : null);
+    if (destino) {
+      setVistaActiva(destino);
+    }
   };
 
   const srcReverse = recortes[BOTONES_UI.reverse.archivo] || BOTONES_UI.reverse.archivo;
@@ -382,54 +412,80 @@ export default function App() {
     ? (recortes[BOTONES_UI.musica.archivoOn] || BOTONES_UI.musica.archivoOn)
     : (recortes[BOTONES_UI.musica.archivoOff] || BOTONES_UI.musica.archivoOff);
 
+  const fondoActual = vistaActiva === 'sobre-mi' ? `url('${bgSobreMi}')` : "url('/dibujos/BG.PNG')";
+
   return (
     <div
       ref={pantallaRef}
       className="pantalla-contenedor"
       onPointerMove={manejarMovimientoCursor}
     >
-      <main ref={lienzoRef} className="lienzo-fondo">
-        {DIBUJOS.map((dibujo) => {
-          const zIndex = ordenDibujos.indexOf(dibujo.id) + 10;
+      <main
+        ref={lienzoRef}
+        className="lienzo-fondo"
+        style={{ backgroundImage: fondoActual }}
+      >
+        {vistaActiva === 'inicio' && (
+          <>
+            {DIBUJOS.map((dibujo) => {
+              const zIndex = ordenDibujos.indexOf(dibujo.id) + 10;
 
-          if (dibujo.capaCompleta) {
-            return (
-              <CapaFullCanvas
-                key={`${dibujo.id}-${resetKey}`}
-                dibujo={dibujo}
-                zIndex={zIndex}
-                activa={capaHover === dibujo.id}
-                enArrastre={capaArrastrando === dibujo.id}
-                onFrente={traerDibujoAlFrente}
-                onDragState={setCapaArrastrando}
-                onRegistrarMapa={registrarMapa}
-              />
-            );
-          }
+              if (dibujo.capaCompleta) {
+                return (
+                  <CapaFullCanvas
+                    key={`${dibujo.id}-${resetKey}`}
+                    dibujo={dibujo}
+                    zIndex={zIndex}
+                    activa={capaHover === dibujo.id}
+                    enArrastre={capaArrastrando === dibujo.id}
+                    onFrente={traerDibujoAlFrente}
+                    onDragState={setCapaArrastrando}
+                    onRegistrarMapa={registrarMapa}
+                  />
+                );
+              }
 
-          return (
-            <EstampillaItem
-              key={`${dibujo.id}-${resetKey}`}
-              dibujo={dibujo}
-              srcFinal={recortes[dibujo.archivo]}
-              zIndex={zIndex}
+              return (
+                <EstampillaItem
+                  key={`${dibujo.id}-${resetKey}`}
+                  dibujo={dibujo}
+                  srcFinal={recortes[dibujo.archivo]}
+                  zIndex={zIndex}
+                  lienzoRef={lienzoRef}
+                  onHoverChange={setItemNormalHover}
+                  onFrente={traerDibujoAlFrente}
+                />
+              );
+            })}
+
+            <BotonMovible
+              boton={BOTONES_UI.reverse}
+              src={srcReverse}
               lienzoRef={lienzoRef}
               onHoverChange={setItemNormalHover}
-              onFrente={traerDibujoAlFrente}
+              onAccion={reiniciarTodo}
+              title="Ordenar dibujos"
+              hoverProps={{ scale: 1.1, rotate: -8 }}
+              tapProps={{ scale: 0.92, rotate: -25 }}
             />
-          );
-        })}
+          </>
+        )}
 
-        <BotonMovible
-          boton={BOTONES_UI.reverse}
-          src={srcReverse}
-          lienzoRef={lienzoRef}
-          onHoverChange={setItemNormalHover}
-          onAccion={reiniciarTodo}
-          title="Ordenar dibujos"
-          hoverProps={{ scale: 1.1, rotate: -8 }}
-          tapProps={{ scale: 0.92, rotate: -25 }}
-        />
+        {vistaActiva === 'sobre-mi' &&
+          DIBUJOS_SOBRE_MI.map((dibujo) => {
+            const zIndex = ordenDibujosSobreMi.indexOf(dibujo.id) + 10;
+            return (
+              <EstampillaItem
+                key={`${dibujo.id}-${resetKey}`}
+                dibujo={dibujo}
+                srcFinal={recortes[dibujo.archivo]}
+                zIndex={zIndex}
+                lienzoRef={lienzoRef}
+                onHoverChange={setItemNormalHover}
+                onFrente={traerDibujoAlFrente}
+              />
+            );
+          })}
 
         <BotonMovible
           boton={BOTONES_UI.musica}
@@ -443,9 +499,12 @@ export default function App() {
         />
       </main>
 
-      {PESTANAS_PATRON.map((tab) => {
+      {/* Pestañas inferiores de navegación */}
+      {PESTANAS_PATRON.map((tab, index) => {
         const zIndex = ordenPestanas.indexOf(tab.id) + 50;
         const srcFinal = recortes[tab.archivo] || tab.archivo;
+        const destino = tab.vista || (index === 0 ? 'inicio' : index === 1 ? 'sobre-mi' : null);
+        const esActiva = destino === vistaActiva;
 
         return (
           <motion.div
@@ -455,17 +514,15 @@ export default function App() {
               left: tab.left,
               zIndex
             }}
-            whileHover={{ y: -20 }}
+            animate={{ y: esActiva ? -14 : 0 }}
+            whileHover={{ y: -22 }}
             transition={{ type: 'spring', stiffness: 320, damping: 24 }}
             onPointerEnter={() => {
               setItemNormalHover(tab.id);
               traerPestanaAlFrente(tab.id);
             }}
             onPointerLeave={() => setItemNormalHover(null)}
-            onPointerDown={() => {
-              sonarPop();
-              traerPestanaAlFrente(tab.id);
-            }}
+            onPointerDown={() => manejarClickPestana(tab, index)}
           >
             <img src={srcFinal} alt={tab.nombre} />
           </motion.div>

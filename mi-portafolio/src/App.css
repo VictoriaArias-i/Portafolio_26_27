@@ -18,16 +18,17 @@ body,
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Contenedor que centra el lienzo */
-.pantalla-contenedor {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+/* Lienzo en 16:9 que cubre todo el ancho sin deformar */
+.lienzo-fondo {
+  width: max(100vw, calc(100vh * 16 / 9));
+  height: max(100vh, calc(100vw * 9 / 16));
+  margin-top: -2.5vh;
+  flex-shrink: 0;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #e4e6d3;
+  background-image: url('/dibujos/BG.PNG');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* Lienzo en 16:9 que cubre todo el ancho sin deformar */
@@ -114,9 +115,10 @@ body,
 }
 
 /* Pestañas inferiores fijas en su lugar */
+
 .pestana-movible {
   position: fixed;
-  bottom: -6.2vh;
+  bottom: -8.5vh;
   width: 18.5%;
   cursor: pointer;
 }

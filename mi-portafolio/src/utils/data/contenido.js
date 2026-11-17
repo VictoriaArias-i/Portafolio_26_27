@@ -28,6 +28,19 @@ export const PESTANAS_PATRON = [
   { id: 'tab-5', nombre: 'Pestana_Verde_3', archivo: '/dibujos/List_V.PNG', left: '55.8%' }
 ];
 
+export const DIBUJOS_SOBRE_MI = [
+  // Ejemplo cuando tengas tus ilustraciones para esta sección:
+  // {
+  //   id: 'foto_sobre_mi',
+  //   nombre: 'Foto',
+  //   archivo: '/dibujos/Foto_S.png',
+  //   capaCompleta: false,
+  //   x: '20%',
+  //   y: '30%',
+  //   alto: '25%'
+  // }
+];
+
 export const DIBUJOS = [
 {
   id: 'c1',
