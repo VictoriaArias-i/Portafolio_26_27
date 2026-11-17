@@ -1,53 +1,55 @@
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
-  max-width: none;
+body {
   margin: 0;
   padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: block !important;
+  background-color: #e4e6d3;
+}
+
+#root {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
   overflow: hidden;
   user-select: none;
   display: block;
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Lienzo en 16:9 que cubre todo el ancho sin deformar */
+.pantalla-contenedor {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background-color: #e4e6d3;
+}
+
 .lienzo-fondo {
   width: max(100vw, calc(100vh * 16 / 9));
   height: max(100vh, calc(100vw * 9 / 16));
   margin-top: -2.5vh;
   flex-shrink: 0;
   position: relative;
-  background-image: url('/dibujos/BG.PNG');
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* Lienzo en 16:9 que cubre todo el ancho sin deformar */
-.lienzo-fondo {
-  width: max(100vw, calc(100vh * 16 / 9));
-  height: max(100vh, calc(100vw * 9 / 16));
-  flex-shrink: 0;
-  position: relative;
-  background-image: url('/dibujos/BG.PNG');
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* Capa en tamaño original (Victoria) */
 .capa-completa {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   cursor: grab;
@@ -61,25 +63,23 @@ body,
 .capa-completa img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: fill;
   display: block;
   pointer-events: none;
-  transition: filter 0.2s ease;
 }
 
-/* Estampillas con altura controlada y proporción original intacta */
 .estampilla-movible {
   position: absolute;
   cursor: grab;
   touch-action: none;
 }
 
-.estampilla-movible.con-link {
-  cursor: pointer;
-}
-
 .estampilla-movible:active {
   cursor: grabbing;
+}
+
+.estampilla-movible.con-link {
+  cursor: pointer;
 }
 
 .estampilla-movible img {
@@ -87,19 +87,13 @@ body,
   width: auto;
   display: block;
   pointer-events: none;
-  transition: filter 0.2s ease;
 }
 
-/* Botones ilustrados (Reverse y Música On/Off) */
 .boton-dibujo {
   position: absolute;
-  cursor: grab;
-  z-index: 80;
+  z-index: 40;
+  cursor: pointer;
   touch-action: none;
-}
-
-.boton-dibujo:active {
-  cursor: grabbing;
 }
 
 .boton-dibujo img {
@@ -107,18 +101,11 @@ body,
   height: auto;
   display: block;
   pointer-events: none;
-  transition: filter 0.2s ease;
 }
-
-.boton-dibujo:hover img {
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3)) brightness(1.05);
-}
-
-/* Pestañas inferiores fijas en su lugar */
 
 .pestana-movible {
   position: fixed;
-  bottom: -8.5vh;
+  bottom: -7.5vh;
   width: 18.5%;
   cursor: pointer;
 }
@@ -128,12 +115,4 @@ body,
   height: auto;
   display: block;
   pointer-events: none;
-  transition: filter 0.2s ease;
-}
-
-/* Efecto hover unificado */
-.capa-completa.en-hover img,
-.estampilla-movible:hover img,
-.pestana-movible:hover img {
-  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.32)) brightness(1.04);
 }

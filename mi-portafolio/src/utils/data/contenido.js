@@ -21,61 +21,9 @@ export const BOTONES_UI = {
 };
 
 export const PESTANAS_PATRON = [
-  { id: 'tab-1', nombre: 'Pestana_Verde_1', archivo: '/dibujos/List_V.PNG', left: '-1.8%' },
-  { id: 'tab-2', nombre: 'Pestana_Morada_1', archivo: '/dibujos/List_M.PNG', left: '12.6%' },
+  { id: 'tab-1', nombre: 'Pestana_Verde_1', archivo: '/dibujos/List_V.PNG', left: '-1.8%', vista: 'inicio' },
+  { id: 'tab-2', nombre: 'Pestana_Morada_1', archivo: '/dibujos/List_M.PNG', left: '12.6%', vista: 'sobre-mi' },
   { id: 'tab-3', nombre: 'Pestana_Verde_2', archivo: '/dibujos/List_V.PNG', left: '27.0%' },
   { id: 'tab-4', nombre: 'Pestana_Morada_2', archivo: '/dibujos/List_M.PNG', left: '41.4%' },
   { id: 'tab-5', nombre: 'Pestana_Verde_3', archivo: '/dibujos/List_V.PNG', left: '55.8%' }
-];
-
-export const DIBUJOS_SOBRE_MI = [
-  // Ejemplo cuando tengas tus ilustraciones para esta sección:
-  // {
-  //   id: 'foto_sobre_mi',
-  //   nombre: 'Foto',
-  //   archivo: '/dibujos/Foto_S.png',
-  //   capaCompleta: false,
-  //   x: '20%',
-  //   y: '30%',
-  //   alto: '25%'
-  // }
-];
-
-export const DIBUJOS = [
-{
-  id: 'c1',
-  nombre: 'C_1',
-  archivo: '/dibujos/C_1.PNG',
-  capaCompleta: false,
-  x: '26%',
-  y: '67%',
-  alto: '13.4%',
-  link: 'https://github.com/VictoriaArias-i'
-},
-  {
-    id: 'c2',
-    nombre: 'C_2',
-    archivo: '/dibujos/C_2.png',
-    capaCompleta: false,
-    x: '42%',
-    y: '67%',
-    alto: '13.4%'
-  },
-  {
-    id: 'c3',
-    nombre: 'C_3',
-    archivo: '/dibujos/C_3.PNG',
-    capaCompleta: false,
-    x: '57.5%',
-    y: '66.5%',
-    alto: '15%',
-    link: 'https://portafolio-victoria-arias.my.canva.site/'
-  },
-  {
-    id: 'victoria',
-    nombre: 'Victoria',
-    archivo: '/dibujos/Victoria.PNG',
-    capaCompleta: true,
-    link: 'https://www.instagram.com/the_vvitch_iu'
-  }
 ];
