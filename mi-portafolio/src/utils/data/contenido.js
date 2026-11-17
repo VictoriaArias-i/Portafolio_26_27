@@ -29,16 +29,16 @@ export const PESTANAS_PATRON = [
 ];
 
 export const DIBUJOS = [
-  {
-    id: 'c1',
-    nombre: 'C_1',
-    archivo: '/dibujos/C_1.png',
-    capaCompleta: false,
-    x: '26%',
-    y: '67%',
-    alto: '13.4%',
-    link: 'https://github.com/VictoriaArias-i'
-  },
+{
+  id: 'c1',
+  nombre: 'C_1',
+  archivo: '/dibujos/C_1.PNG',
+  capaCompleta: false,
+  x: '26%',
+  y: '67%',
+  alto: '13.4%',
+  link: 'https://github.com/VictoriaArias-i'
+},
   {
     id: 'c2',
     nombre: 'C_2',

@@ -4,13 +4,21 @@
   padding: 0;
 }
 
-body {
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   user-select: none;
+  display: block;
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Contenedor que centra y recorta un poco arriba y abajo */
+/* Contenedor que centra el lienzo */
 .pantalla-contenedor {
   width: 100vw;
   height: 100vh;
@@ -58,7 +66,7 @@ body {
   transition: filter 0.2s ease;
 }
 
-/* Estampillas con misma altura exacta y proporción original intacta */
+/* Estampillas con altura controlada y proporción original intacta */
 .estampilla-movible {
   position: absolute;
   cursor: grab;
@@ -105,7 +113,7 @@ body {
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3)) brightness(1.05);
 }
 
-/* Pestañas inferiores fijas en su lugar (solo animación hover arriba/abajo) */
+/* Pestañas inferiores fijas en su lugar */
 .pestana-movible {
   position: fixed;
   bottom: -6.2vh;

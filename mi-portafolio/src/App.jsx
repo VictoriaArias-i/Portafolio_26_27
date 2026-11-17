@@ -91,8 +91,6 @@ function EstampillaItem({ dibujo, srcFinal, zIndex, lienzoRef, onHoverChange, on
     }
   };
 
-  if (!srcFinal) return null;
-
   return (
     <motion.div
       className={`estampilla-movible ${dibujo.link ? 'con-link' : ''}`}
@@ -112,7 +110,7 @@ function EstampillaItem({ dibujo, srcFinal, zIndex, lienzoRef, onHoverChange, on
       onPointerDown={manejarPointerDown}
       onPointerUp={manejarPointerUp}
     >
-      <img src={srcFinal} alt={dibujo.nombre} />
+      <img src={srcFinal || dibujo.archivo} alt={dibujo.nombre} />
     </motion.div>
   );
 }
@@ -221,6 +219,7 @@ export default function App() {
         const img = new Image();
         img.src = src;
         img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
       });
 
     const procesarImagenes = async () => {
@@ -232,45 +231,51 @@ export default function App() {
         ])
       ];
 
-      for (const ruta of rutasIndividuales) {
-        const img = await cargarImagen(ruta);
-        const w = img.naturalWidth;
-        const h = img.naturalHeight;
-        const canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        ctx.drawImage(img, 0, 0);
-        const data = ctx.getImageData(0, 0, w, h).data;
+      await Promise.all(
+        rutasIndividuales.map(async (ruta) => {
+          const img = await cargarImagen(ruta);
+          if (!img) return;
 
-        let minX = w, minY = h, maxX = 0, maxY = 0, encontrado = false;
-        for (let py = 0; py < h; py++) {
-          for (let px = 0; px < w; px++) {
-            if (data[(py * w + px) * 4 + 3] > 15) {
-              if (px < minX) minX = px;
-              if (px > maxX) maxX = px;
-              if (py < minY) minY = py;
-              if (py > maxY) maxY = py;
-              encontrado = true;
+          const w = img.naturalWidth;
+          const h = img.naturalHeight;
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d', { willReadFrequently: true });
+          ctx.drawImage(img, 0, 0);
+          const data = ctx.getImageData(0, 0, w, h).data;
+
+          let minX = w, minY = h, maxX = 0, maxY = 0, encontrado = false;
+          for (let py = 0; py < h; py++) {
+            for (let px = 0; px < w; px++) {
+              if (data[(py * w + px) * 4 + 3] > 15) {
+                if (px < minX) minX = px;
+                if (px > maxX) maxX = px;
+                if (py < minY) minY = py;
+                if (py > maxY) maxY = py;
+                encontrado = true;
+              }
             }
           }
-        }
 
-        if (encontrado) {
-          const rw = maxX - minX + 1;
-          const rh = maxY - minY + 1;
-          const recorte = document.createElement('canvas');
-          recorte.width = rw;
-          recorte.height = rh;
-          recorte.getContext('2d').drawImage(canvas, minX, minY, rw, rh, 0, 0, rw, rh);
-          setRecortes((prev) => ({ ...prev, [ruta]: recorte.toDataURL('image/png') }));
-        }
-      }
+          if (encontrado) {
+            const rw = maxX - minX + 1;
+            const rh = maxY - minY + 1;
+            const recorte = document.createElement('canvas');
+            recorte.width = rw;
+            recorte.height = rh;
+            recorte.getContext('2d').drawImage(canvas, minX, minY, rw, rh, 0, 0, rw, rh);
+            setRecortes((prev) => ({ ...prev, [ruta]: recorte.toDataURL('image/png') }));
+          }
+        })
+      );
 
       const [imgOff, imgOn] = await Promise.all([
         cargarImagen(BOTONES_UI.musica.archivoOff),
         cargarImagen(BOTONES_UI.musica.archivoOn)
       ]);
+
+      if (!imgOff || !imgOn) return;
 
       const w = imgOff.naturalWidth;
       const h = imgOff.naturalHeight;
@@ -372,10 +377,10 @@ export default function App() {
     setResetKey((k) => k + 1);
   };
 
-  const srcReverse = recortes[BOTONES_UI.reverse.archivo];
+  const srcReverse = recortes[BOTONES_UI.reverse.archivo] || BOTONES_UI.reverse.archivo;
   const srcMusicaActual = musicaActiva
-    ? recortes[BOTONES_UI.musica.archivoOn]
-    : recortes[BOTONES_UI.musica.archivoOff];
+    ? (recortes[BOTONES_UI.musica.archivoOn] || BOTONES_UI.musica.archivoOn)
+    : (recortes[BOTONES_UI.musica.archivoOff] || BOTONES_UI.musica.archivoOff);
 
   return (
     <div
@@ -384,7 +389,6 @@ export default function App() {
       onPointerMove={manejarMovimientoCursor}
     >
       <main ref={lienzoRef} className="lienzo-fondo">
-        {/* Estampillas y Victoria */}
         {DIBUJOS.map((dibujo) => {
           const zIndex = ordenDibujos.indexOf(dibujo.id) + 10;
 
@@ -416,39 +420,32 @@ export default function App() {
           );
         })}
 
-        {/* Botones Reverse y Música */}
-        {srcReverse && (
-          <BotonMovible
-            boton={BOTONES_UI.reverse}
-            src={srcReverse}
-            lienzoRef={lienzoRef}
-            onHoverChange={setItemNormalHover}
-            onAccion={reiniciarTodo}
-            title="Ordenar dibujos"
-            hoverProps={{ scale: 1.1, rotate: -8 }}
-            tapProps={{ scale: 0.92, rotate: -25 }}
-          />
-        )}
+        <BotonMovible
+          boton={BOTONES_UI.reverse}
+          src={srcReverse}
+          lienzoRef={lienzoRef}
+          onHoverChange={setItemNormalHover}
+          onAccion={reiniciarTodo}
+          title="Ordenar dibujos"
+          hoverProps={{ scale: 1.1, rotate: -8 }}
+          tapProps={{ scale: 0.92, rotate: -25 }}
+        />
 
-        {srcMusicaActual && (
-          <BotonMovible
-            boton={BOTONES_UI.musica}
-            src={srcMusicaActual}
-            lienzoRef={lienzoRef}
-            onHoverChange={setItemNormalHover}
-            onAccion={alternarMusica}
-            title={musicaActiva ? 'Apagar música' : 'Encender música'}
-            hoverProps={{ scale: 1.08, rotate: 3 }}
-            tapProps={{ scale: 0.93 }}
-          />
-        )}
+        <BotonMovible
+          boton={BOTONES_UI.musica}
+          src={srcMusicaActual}
+          lienzoRef={lienzoRef}
+          onHoverChange={setItemNormalHover}
+          onAccion={alternarMusica}
+          title={musicaActiva ? 'Apagar música' : 'Encender música'}
+          hoverProps={{ scale: 1.08, rotate: 3 }}
+          tapProps={{ scale: 0.93 }}
+        />
       </main>
 
-      {/* Pestañas inferiores fijas en su lugar */}
       {PESTANAS_PATRON.map((tab) => {
         const zIndex = ordenPestanas.indexOf(tab.id) + 50;
-        const srcFinal = recortes[tab.archivo];
-        if (!srcFinal) return null;
+        const srcFinal = recortes[tab.archivo] || tab.archivo;
 
         return (
           <motion.div

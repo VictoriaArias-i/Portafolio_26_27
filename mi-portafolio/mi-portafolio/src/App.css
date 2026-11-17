@@ -1,0 +1,129 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+  user-select: none;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Contenedor que centra y recorta un poco arriba y abajo */
+.pantalla-contenedor {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e4e6d3;
+}
+
+/* Lienzo en 16:9 que cubre todo el ancho sin deformar */
+.lienzo-fondo {
+  width: max(100vw, calc(100vh * 16 / 9));
+  height: max(100vh, calc(100vw * 9 / 16));
+  flex-shrink: 0;
+  position: relative;
+  background-image: url('/dibujos/BG.PNG');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Capa en tamaño original (Victoria) */
+.capa-completa {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.capa-completa:active {
+  cursor: grabbing;
+}
+
+.capa-completa img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  transition: filter 0.2s ease;
+}
+
+/* Estampillas con misma altura exacta y proporción original intacta */
+.estampilla-movible {
+  position: absolute;
+  cursor: grab;
+  touch-action: none;
+}
+
+.estampilla-movible.con-link {
+  cursor: pointer;
+}
+
+.estampilla-movible:active {
+  cursor: grabbing;
+}
+
+.estampilla-movible img {
+  height: 100%;
+  width: auto;
+  display: block;
+  pointer-events: none;
+  transition: filter 0.2s ease;
+}
+
+/* Botones ilustrados (Reverse y Música On/Off) */
+.boton-dibujo {
+  position: absolute;
+  cursor: grab;
+  z-index: 80;
+  touch-action: none;
+}
+
+.boton-dibujo:active {
+  cursor: grabbing;
+}
+
+.boton-dibujo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  transition: filter 0.2s ease;
+}
+
+.boton-dibujo:hover img {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3)) brightness(1.05);
+}
+
+/* Pestañas inferiores fijas en su lugar (solo animación hover arriba/abajo) */
+.pestana-movible {
+  position: fixed;
+  bottom: -6.2vh;
+  width: 18.5%;
+  cursor: pointer;
+}
+
+.pestana-movible img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  transition: filter 0.2s ease;
+}
+
+/* Efecto hover unificado */
+.capa-completa.en-hover img,
+.estampilla-movible:hover img,
+.pestana-movible:hover img {
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.32)) brightness(1.04);
+}
